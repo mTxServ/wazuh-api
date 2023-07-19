@@ -8,7 +8,6 @@ Wazuh Api is a modern PHP library based on Guzzle for [Wazuh Rest API](https://d
 ## Dependencies
 
 * PHP 7 / 8
-* [Guzzle](http://www.guzzlephp.org): ^7.0
 
 ## Installation
 
