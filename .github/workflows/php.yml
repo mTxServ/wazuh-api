@@ -7,12 +7,16 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-
+  phplint:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.0' # Set up PHP 8.0
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
@@ -21,4 +25,7 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Check PHP syntax
-      run: ./vendor/bin/php-cs-fixer fix --dry-run --diff
+      uses: overtrue/phplint@v2
+      with:
+        extensions: php
+        exclude: vendor,.github
