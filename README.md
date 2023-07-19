@@ -29,7 +29,7 @@ $client = new WazuhClient([
     'base_uri' => 'https://wazuh.my.instance:55000',
     'wazuh_user' => 'my_user',
     'wazuh_password' => 'my_password',
-    'verify' => true,
+    'verify' => true, // SSL Certificate
 ]);
 
 try {
