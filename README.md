@@ -1,23 +1,24 @@
-Wazuh API
-==========
+# Wazuh API PHP Client
 
-[![Latest Stable Version](https://poser.pugx.org/mtxserv/wazuh-api/v/stable.png)](https://packagist.org/packages/mtxserv/wazuh-api)
+![Latest Stable Version](https://poser.pugx.org/mtxserv/wazuh-api/v/stable.png)
 
-Wazuh Api is a modern PHP library based on Guzzle for [Wazuh Rest API](https://documentation.wazuh.com/current/user-manual/api/index.html).
+The Wazuh API PHP Client is a modern library built on top of [Guzzle](http://docs.guzzlephp.org/en/stable/), providing an efficient interface for interacting with the [Wazuh REST API](https://documentation.wazuh.com/current/user-manual/api/index.html).
 
-## Dependencies
+## Requirements
 
-* PHP 7 / 8
+- PHP 7 or 8
 
 ## Installation
 
-Installation of Wazuh Rest Api is only officially supported using Composer:
+The recommended way to install the Wazuh API PHP Client is via [Composer](https://getcomposer.org/), a powerful package manager for PHP:
 
 ```sh
 composer require mtxserv/wazuh-api
 ```
 
-## Example
+## Usage
+
+Below is a basic example illustrating how to instantiate the client and retrieve a list of agents:
 
 ```php
 <?php
@@ -29,11 +30,11 @@ $client = new WazuhClient([
     'base_uri' => 'https://wazuh.my.instance:55000',
     'wazuh_user' => 'my_user',
     'wazuh_password' => 'my_password',
-    'verify' => true, // SSL Certificate
+    'verify' => true, // SSL Certificate verification
 ]);
 
 try {
-    // Get VM list
+    // Retrieve list of agents
     $response = $client->get('/agents');
     $json = json_decode($response->getBody()->getContents(), \JSON_THROW_ON_ERROR);
     var_dump($json);
@@ -41,3 +42,11 @@ try {
     var_dump($e->getMessage());
 }
 ```
+
+In this example, we're connecting to a Wazuh instance, authenticating with a username and password, and requesting a list of agents. We're also handling any potential exceptions that might be thrown during this process.
+
+## Support
+
+For more examples and usage instructions, please refer to the [official Wazuh API documentation](https://documentation.wazuh.com/current/user-manual/api/index.html).
+
+If you encounter any issues, feel free to open an issue on this GitHub repository.
