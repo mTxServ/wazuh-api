@@ -6,17 +6,34 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 
+/**
+ * Class AuthMiddleware
+ * Middleware for handling authentication.
+ */
 class AuthMiddleware
 {
     private $token;
-
     private $client;
 
+    /**
+     * AuthMiddleware constructor.
+     *
+     * @param Client $client The GuzzleHttp client.
+     */
     public function __construct(Client $client)
     {
         $this->client = $client;
     }
     
+    /**
+     * Generates a token if it does not exist and returns a function that 
+     * includes the Authorization header with each request.
+     *
+     * @param callable $handler The handler function.
+     *
+     * @return callable The function to handle the request.
+     */
+
     public function __invoke(callable $handler)
     {
         if (empty($this->token)) {
@@ -31,6 +48,11 @@ class AuthMiddleware
         };
     }
 
+    /**
+     * Generates a token using the /security/user/authenticate API endpoint.
+     *
+     * @throws GuzzleException if any error occurs while generating the token.
+     */
     private function generateToken()
     {
         $response = $this->client->post('/security/user/authenticate', [
@@ -44,21 +66,14 @@ class AuthMiddleware
             ],
         ]);
 
-        $json = json_decode($response->getBody()->getContents(), \JSON_THROW_ON_ERROR);
-        if (!isset($json['error'])) {
-            throw new GuzzleException('Error returned by the api is missing');
+        $json = json_decode($response->getBody()->getContents(), true);
+
+        if (empty($json) || !isset($json['error'], $json['data']['token'])) {
+            throw new GuzzleException('Unexpected response received from the API.');
         }
 
         if ($json['error'] !== 0) {
-            throw new GuzzleException(sprintf('Error "%s" returned by the api is missing', $json['error']));
-        }
-
-        if (!isset($json['data'])) {
-            throw new GuzzleException('Data returned by the api is missing');
-        }
-
-        if (!isset($json['data']['token'])) {
-            throw new GuzzleException('Token returned by the api is missing');
+            throw new GuzzleException(sprintf('API error: "%s"', $json['error']));
         }
 
         $this->token = $json['data']['token'];

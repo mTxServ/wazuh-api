@@ -25,7 +25,11 @@ Below is a basic example illustrating how to instantiate the client and retrieve
 
 use Wazuh\WazuhClient;
 use GuzzleHttp\Exception\GuzzleException;
+use JsonException;
 
+require_once 'vendor/autoload.php';
+
+// Setup WazuhClient with necessary parameters
 $client = new WazuhClient([
     'base_uri' => 'https://wazuh.my.instance:55000',
     'wazuh_user' => 'my_user',
@@ -36,11 +40,20 @@ $client = new WazuhClient([
 try {
     // Retrieve list of agents
     $response = $client->get('/agents');
-    $json = json_decode($response->getBody()->getContents(), \JSON_THROW_ON_ERROR);
+
+    // Decode JSON response and handle JSON exceptions
+    try {
+        $json = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+    } catch (JsonException $jsonException) {
+        echo 'JSON decoding error: ', $jsonException->getMessage(), "\n";
+        return;
+    }
+
     var_dump($json);
 } catch (GuzzleException $e) {
-    var_dump($e->getMessage());
+    echo 'HTTP request error: ', $e->getMessage(), "\n";
 }
+
 ```
 
 In this example, we're connecting to a Wazuh instance, authenticating with a username and password, and requesting a list of agents. We're also handling any potential exceptions that might be thrown during this process.
